@@ -12,7 +12,8 @@
   "scripts": {
     "start": "npm run dev",
     "dev": "father doc dev",
-    "build": "father build"
+    "build": "father build",
+    "type-check": "tsc --noEmit --project tsconfig.json"
   },
   "peerDependencies": {
     "antd": "^3.24.2",

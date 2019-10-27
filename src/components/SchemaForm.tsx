@@ -1,6 +1,6 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { FormProps } from 'antd/es/form';
-import { Form, Card } from 'antd';
+import { Form } from 'antd';
 import Field from './Field';
 import { FormSchema } from '../form-type';
 import { WrappedFormUtils } from 'antd/es/form/Form';
@@ -22,4 +22,4 @@ const SchemaForm: React.FC<SchemaFormProps> & { Field: typeof Field } = ({ form,
 
 SchemaForm.Field = Field;
 
-export default Form.create()(SchemaForm);
+export default (Form.create()(SchemaForm) as any) as typeof SchemaForm;
