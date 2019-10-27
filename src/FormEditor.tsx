@@ -53,8 +53,7 @@ const GridRight = styled(GridBlock)`
 
 const [EditorPropsProvider, useEditorProps] = constate(
   ({ value, onChange }: Pick<FormEditorProps, 'value' | 'onChange'>) => {
-    const [formValue, setFormValue] = useState(value);
-    return useMemo(() => ({ formValue, onFormValueChange: onChange }), [formValue]);
+    return useMemo(() => ({ formValue: value, onFormValueChange: onChange }), [value]);
   },
 );
 

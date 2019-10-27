@@ -19,7 +19,7 @@ export interface SchemaProperty {
   title: string;
   description: string;
   'x-component': string;
-  'x-params': {
+  'x-params'?: {
     [param: string]: any;
   };
   properties?: {

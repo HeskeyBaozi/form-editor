@@ -22,13 +22,13 @@ const Field: React.FC<FieldProps> & { registerComponent: typeof registerComponen
   ignored,
   required,
   'x-component': xComponent,
-  'x-params': xParams,
+  'x-params': xParams = {},
   form,
   defaultValue,
   ...rest
 }) => {
   const TargetComponent = componentDict.get(xComponent);
-  if (!TargetComponent || !xParams) {
+  if (!TargetComponent) {
     console.error(`[Target:${xComponent}, xParams] =`, TargetComponent, xParams);
     return <Form.Item label={title} required={required} />;
   }

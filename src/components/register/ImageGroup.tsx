@@ -5,7 +5,7 @@ import styled from 'styled-components';
 import { Modal } from 'antd';
 
 interface xImageGroup extends TargetComponentProps {
-  value: string[];
+  value?: string[];
 }
 
 const ImageGroupWrapper = styled.div`
@@ -33,7 +33,7 @@ const DetailImageWrapper = styled.div`
 `;
 
 const xImageGroup: React.FC<xImageGroup> = React.forwardRef(
-  ({ fieldMeta, value, ...rest }, ref: any) => {
+  ({ fieldMeta, value = [], ...rest }, ref: any) => {
     const handleClickImage = useCallback(e => {
       Modal.info({
         title: '图片详情',

@@ -4,13 +4,13 @@ import { TargetComponentProps } from '../Field';
 import { registerComponent } from './dict';
 
 interface xTextViewProps extends TargetComponentProps {
-  value: string;
+  value?: string;
   markdown?: boolean;
 }
 
 const xTextView: React.FC<xTextViewProps> = React.forwardRef(
-  ({ fieldMeta, value, markdown, ...rest }, ref: any) => {
-    return <Typography.Text {...rest}>{value || '{{ TextView }}'}</Typography.Text>;
+  ({ fieldMeta, value = '{{ TextView }}', markdown, ...rest }, ref: any) => {
+    return <Typography.Text {...rest}>{value}</Typography.Text>;
   },
 );
 
