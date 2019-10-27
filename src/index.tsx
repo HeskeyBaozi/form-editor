@@ -1,1 +1,1 @@
-export { default as FormEditor } from './components/FormEditor';
+export { default as FormEditor } from './FormEditor';
