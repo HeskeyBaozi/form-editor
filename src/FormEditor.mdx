@@ -6,9 +6,73 @@ sidebar: true
 ---
 
 import FormEditor from './FormEditor';
+const value = {
+    "title": "Image judger form",
+    "description": "simple description",
+    "type": "object",
+    "properties": {
+      "images": {
+        "type": "array",
+        "description": "展示用的图片",
+        "items": {
+          "type": "string"
+        },
+        "x-component": "ImageGroup",
+        "x-params": {}
+      },
+      "imagesDescription": {
+        "type": "string",
+        "description": "图片简介文字",
+        "x-component": "TextView",
+        "x-params": {
+          "markdown": true
+        }
+      },
+      "isQualified": {
+        "type": "boolean",
+        "description": "图片是否合格",
+        "x-component": "Switch",
+        "x-params": {
+          "size": "small"
+        }
+      },
+      "satisfaction": {
+        "type": "string",
+        "description": "满意度",
+        "enum": ["ok", "soso", "bad"],
+        "x-component": "RadioGroup",
+        "x-params": {
+          "buttonStyle": "solid",
+          "enumLabels": ["很OK", "一般", "不好"]
+        }
+      },
+      "unqualifiedReason": {
+          "title":"不合格原因",
+        "type": "string",
+        "description": "不合格原因",
+        "x-component": "TextArea",
+        "x-params": {
+          "autoSize": {
+            "minRows": 4,
+            "maxRows": 10
+          }
+        }
+      }
+    },
+    "required": ["isQualified", "unqualifiedReason"],
+    "x-display": [
+      "images",
+      "imagesDescription",
+      "satisfaction",
+      "isQualified",
+      "unqualifiedReason"
+    ],
+    "x-ignore": ["images", "imagesDescription"]
+  }
+
 
 # FormEditor
 
 <div style={{height: '75vh'}}>
-    <FormEditor />
+    <FormEditor value={value} />
 </div>

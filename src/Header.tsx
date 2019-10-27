@@ -29,7 +29,7 @@ const Header: React.FC<HeaderProps> = () => {
   return (
     <HeaderWrapper>
       <LogoWrapper>
-        <Icon type="edit" theme="twoTone" />
+        <Icon type="edit" theme="filled" />
       </LogoWrapper>
       <Radio.Group value={mode} onChange={handleModeChange}>
         <Radio.Button value="edit">可视编辑</Radio.Button>
