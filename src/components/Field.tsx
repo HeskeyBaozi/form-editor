@@ -41,9 +41,6 @@ const Field: React.FC<FieldProps> & { registerComponent: typeof registerComponen
   }
 
   const TargetEnhancer = enhancerDict.get(xComponent);
-  if (!TargetEnhancer) {
-    console.error(`[Target:${xComponent} enhancer]`, TargetEnhancer);
-  }
 
   const decorator = useMemo(() => {
     const options: GetFieldDecoratorOptions = { rules: [] };
@@ -54,7 +51,7 @@ const Field: React.FC<FieldProps> & { registerComponent: typeof registerComponen
       });
     }
     return form.getFieldDecorator(name, TargetEnhancer ? TargetEnhancer(options) : options);
-  }, [name, required, form]);
+  }, [name, required, form, TargetEnhancer]);
 
   return (
     <Form.Item label={title}>

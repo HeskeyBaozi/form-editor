@@ -2,8 +2,9 @@ import React from 'react';
 import { Radio } from 'antd';
 import { TargetComponentProps } from '../Field';
 import { registerComponent } from './dict';
+import { RadioGroupProps } from 'antd/es/radio';
 
-interface xRadioGroupProps extends TargetComponentProps {
+interface xRadioGroupProps extends TargetComponentProps, RadioGroupProps {
   enumLabels?: string[];
 }
 

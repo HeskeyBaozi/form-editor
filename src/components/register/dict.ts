@@ -5,8 +5,10 @@ export const enhancerDict = new Map<string, (options: any) => any>();
 export function registerComponent(
   name: string,
   component: React.ComponentType<any>,
-  enhancer: (options: GetFieldDecoratorOptions) => GetFieldDecoratorOptions = options => options,
+  enhancer?: (options: GetFieldDecoratorOptions) => GetFieldDecoratorOptions,
 ) {
   componentDict.set(name, component);
-  enhancerDict.set(name, enhancer);
+  if (typeof enhancer === 'function') {
+    enhancerDict.set(name, enhancer);
+  }
 }

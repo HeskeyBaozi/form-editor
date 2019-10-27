@@ -21,7 +21,6 @@ const Center: React.FC<CenterProps> = () => {
 
   return (
     <>
-      <div>{mode}</div>
       <SchemaForm formValue={formValue}>
         {form =>
           list.map(props => (
