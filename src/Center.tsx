@@ -21,7 +21,34 @@ const Center: React.FC<CenterProps> = () => {
   return (
     <>
       <div>{mode}</div>
-      <SchemaForm />
+      <SchemaForm formValue={formValue}>
+        {form =>
+          list.map(
+            ({
+              name,
+              required,
+              title,
+              type,
+              description,
+              'x-component': xComponent,
+              'x-params': xParams,
+            }) => (
+              <Card key={name}>
+                <SchemaForm.Field
+                  form={form}
+                  name={name}
+                  required={required}
+                  title={title}
+                  type={type}
+                  description={description}
+                  x-component={xComponent}
+                  x-params={xParams}
+                />
+              </Card>
+            ),
+          )
+        }
+      </SchemaForm>
     </>
   );
 };

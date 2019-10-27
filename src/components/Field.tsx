@@ -45,7 +45,11 @@ const Field: React.FC<FieldProps> & { registerComponent: typeof registerComponen
     return form.getFieldDecorator(name, options);
   }, [name, required, form]);
 
-  return <Form.Item label={title}>{decorator(<TargetComponent {...xParams} />)}</Form.Item>;
+  return (
+    <Form.Item label={title}>
+      {decorator(<TargetComponent {...xParams} fieldMeta={rest} />)}
+    </Form.Item>
+  );
 };
 
 Field.registerComponent = registerComponent;
