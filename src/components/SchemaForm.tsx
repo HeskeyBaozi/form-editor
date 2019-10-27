@@ -1,18 +1,38 @@
-import React from 'react';
-import { FormProps } from 'antd/es/form';
-import { Form } from 'antd';
+import React, { useCallback, useEffect } from 'react';
+import { Form, Button } from 'antd';
 import Field from './Field';
-import { FormSchema } from '../form-type';
+import { FormSchema, PrefetchType } from '../form-type';
 import { WrappedFormUtils } from 'antd/es/form/Form';
 
-interface SchemaFormProps extends FormProps {
-  formValue: FormSchema;
+interface SchemaFormProps {
+  form?: WrappedFormUtils<any>;
+  schema: FormSchema;
+  defaultValues?: PrefetchType;
   children: (form: WrappedFormUtils<any> | undefined) => any;
+  onSubmit?: (form: WrappedFormUtils<any> | undefined) => void | Promise<void>;
 }
 
-const SchemaForm: React.FC<SchemaFormProps> & { Field: typeof Field } = ({ form, children }) => {
+const SchemaForm: React.FC<SchemaFormProps> & { Field: typeof Field } = ({
+  form,
+  children,
+  onSubmit,
+  defaultValues,
+}) => {
   if (typeof children === 'function') {
-    return <Form layout="vertical">{children(form)}</Form>;
+    const handleClickSubmit = useCallback(() => onSubmit && onSubmit(form), [form, onSubmit]);
+
+    return (
+      <Form layout="vertical">
+        {children(form)}
+        {onSubmit ? (
+          <Form.Item>
+            <Button type="primary" icon="check" onClick={handleClickSubmit}>
+              提交
+            </Button>
+          </Form.Item>
+        ) : null}
+      </Form>
+    );
   } else {
     console.error('Schema should received function as children');
   }

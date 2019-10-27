@@ -7,6 +7,7 @@ sidebar: true
 
 import FormEditor from './FormEditor';
 const value = {
+  "schema": {
     "title": "Image judger form",
     "description": "simple description",
     "type": "object",
@@ -73,11 +74,22 @@ const value = {
       "unqualifiedReason"
     ],
     "x-ignore": ["images", "imagesDescription"]
+  },
+  "prefetch": {
+    "imagesDescription": "# 这是一段对图片集合的描述",
+    "images": [
+      "https://via.placeholder.com/300x300",
+      "https://via.placeholder.com/350x350",
+      "https://via.placeholder.com/400x400",
+      "https://via.placeholder.com/450x450",
+      "https://via.placeholder.com/500x500"
+    ]
   }
+}
 
 
 # FormEditor
 
-<div style={{height: '75vh'}}>
+<div style={{height: '75vh', width: '1000px'}}>
     <FormEditor value={value} />
 </div>

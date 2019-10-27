@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import styled from 'styled-components';
-import { FormSchema } from './form-type';
+import { EditorValue } from './form-type';
 import Left from './Left';
 import Right from './Right';
 import Header from './Header';
@@ -9,13 +9,12 @@ import { nest } from './utils';
 import Center from './Center';
 
 interface FormEditorProps {
-  value: FormSchema;
-  onChange: (newValue: FormSchema) => void | Promise<void>;
+  value: EditorValue;
+  onChange: (newValue: EditorValue) => void | Promise<void>;
 }
 
 const GridWrapper = styled.div`
   display: grid;
-  width: 100%;
   height: 100%;
   grid-template-rows: 64px auto;
   grid-template-columns: 150px auto 250px;
@@ -43,6 +42,7 @@ const GridLeft = styled(GridBlock)`
 const GridCenter = styled(GridBlock)`
   grid-row-start: 2;
   grid-row-end: span 1;
+  max-width: 600px;
 `;
 
 const GridRight = styled(GridBlock)`

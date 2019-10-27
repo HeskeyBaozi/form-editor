@@ -9,6 +9,7 @@ interface FieldProps extends SchemaProperty, Pick<FormProps, 'form'> {
   name: string;
   required: boolean;
   ignored: boolean;
+  defaultValue?: any;
 }
 
 export interface TargetComponentProps {
@@ -23,6 +24,7 @@ const Field: React.FC<FieldProps> & { registerComponent: typeof registerComponen
   'x-component': xComponent,
   'x-params': xParams,
   form,
+  defaultValue,
   ...rest
 }) => {
   const TargetComponent = componentDict.get(xComponent);
@@ -32,7 +34,11 @@ const Field: React.FC<FieldProps> & { registerComponent: typeof registerComponen
   }
 
   if (ignored) {
-    return <TargetComponent {...xParams} fieldMeta={rest} />;
+    return (
+      <Form.Item>
+        <TargetComponent {...xParams} fieldMeta={rest} value={defaultValue} />
+      </Form.Item>
+    );
   }
 
   if (!form) {
@@ -43,7 +49,7 @@ const Field: React.FC<FieldProps> & { registerComponent: typeof registerComponen
   const TargetEnhancer = enhancerDict.get(xComponent);
 
   const decorator = useMemo(() => {
-    const options: GetFieldDecoratorOptions = { rules: [] };
+    const options: GetFieldDecoratorOptions = { rules: [], initialValue: defaultValue };
     if (required) {
       options.rules!.push({
         required: true,
@@ -51,7 +57,7 @@ const Field: React.FC<FieldProps> & { registerComponent: typeof registerComponen
       });
     }
     return form.getFieldDecorator(name, TargetEnhancer ? TargetEnhancer(options) : options);
-  }, [name, required, form, TargetEnhancer]);
+  }, [name, required, form, TargetEnhancer, defaultValue]);
 
   return (
     <Form.Item label={title}>

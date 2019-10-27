@@ -10,6 +10,10 @@ export interface FormSchema {
   'x-ignore': string[];
 }
 
+export type PrefetchType = {
+  [key: string]: string | number | boolean | any[] | object;
+};
+
 export interface SchemaProperty {
   type: 'string' | 'number' | 'boolean' | 'array' | 'object';
   title: string;
@@ -23,4 +27,9 @@ export interface SchemaProperty {
   };
   enum?: string[];
   items?: SchemaProperty[];
+}
+
+export interface EditorValue {
+  schema: FormSchema;
+  prefetch: PrefetchType;
 }
