@@ -21,5 +21,6 @@ export interface SchemaProperty {
   properties?: {
     [key: string]: SchemaProperty;
   };
+  enum?: string[];
   items?: SchemaProperty[];
 }

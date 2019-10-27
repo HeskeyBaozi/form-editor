@@ -12,6 +12,7 @@ const value = {
     "type": "object",
     "properties": {
       "images": {
+        "title": "图片集合",
         "type": "array",
         "description": "展示用的图片",
         "items": {
@@ -21,6 +22,7 @@ const value = {
         "x-params": {}
       },
       "imagesDescription": {
+        "title": "简单介绍",
         "type": "string",
         "description": "图片简介文字",
         "x-component": "TextView",
@@ -29,6 +31,7 @@ const value = {
         }
       },
       "isQualified": {
+        "title": "是否合格",
         "type": "boolean",
         "description": "图片是否合格",
         "x-component": "Switch",
@@ -37,6 +40,7 @@ const value = {
         }
       },
       "satisfaction": {
+        "title": "满意度打分",
         "type": "string",
         "description": "满意度",
         "enum": ["ok", "soso", "bad"],
@@ -47,11 +51,12 @@ const value = {
         }
       },
       "unqualifiedReason": {
-          "title":"不合格原因",
+        "title":"不合格原因（合格可不填）",
         "type": "string",
-        "description": "不合格原因",
+        "description": "",
         "x-component": "TextArea",
         "x-params": {
+          "placeholder": "请简单介绍一下不合格的原因（合格可不填）",
           "autoSize": {
             "minRows": 4,
             "maxRows": 10
@@ -59,7 +64,7 @@ const value = {
         }
       }
     },
-    "required": ["isQualified", "unqualifiedReason"],
+    "required": ["isQualified"],
     "x-display": [
       "images",
       "imagesDescription",

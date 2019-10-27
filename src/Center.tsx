@@ -13,9 +13,10 @@ const Center: React.FC<CenterProps> = () => {
       formValue['x-display'].map(property => ({
         name: property,
         required: formValue.required.findIndex(eleKey => eleKey === property) >= 0,
+        ignored: formValue['x-ignore'].findIndex(eleKey => eleKey === property) >= 0,
         ...formValue.properties[property],
       })),
-    [formValue['x-display'], formValue.properties, formValue.required],
+    [formValue['x-display'], formValue['x-ignore'], formValue.properties, formValue.required],
   );
 
   return (
@@ -23,30 +24,11 @@ const Center: React.FC<CenterProps> = () => {
       <div>{mode}</div>
       <SchemaForm formValue={formValue}>
         {form =>
-          list.map(
-            ({
-              name,
-              required,
-              title,
-              type,
-              description,
-              'x-component': xComponent,
-              'x-params': xParams,
-            }) => (
-              <Card key={name}>
-                <SchemaForm.Field
-                  form={form}
-                  name={name}
-                  required={required}
-                  title={title}
-                  type={type}
-                  description={description}
-                  x-component={xComponent}
-                  x-params={xParams}
-                />
-              </Card>
-            ),
-          )
+          list.map(props => (
+            <Card key={props.name}>
+              <SchemaForm.Field form={form} {...props} />
+            </Card>
+          ))
         }
       </SchemaForm>
     </>
