@@ -43,6 +43,8 @@ const GridCenter = styled(GridBlock)`
   grid-row-start: 2;
   grid-row-end: span 1;
   max-width: 600px;
+  max-height: 700px;
+  overflow-y: scroll;
 `;
 
 const GridRight = styled(GridBlock)`
@@ -62,10 +64,16 @@ const [ModeProvider, useMode] = constate(({ initialMode }: { initialMode: string
   return useMemo(() => ({ mode, setMode }), [mode]);
 });
 
+const [ChosenProvider, useChosen] = constate(() => {
+  const [chosenKey, setChosenKey] = useState<string | null>(null);
+  return useMemo(() => ({ chosenKey, setChosenKey }), [chosenKey]);
+});
+
 export const useEditorPropsContext = useEditorProps;
 export const useModeContext = useMode;
+export const useChosenContext = useChosen;
 
-const Provider = nest(EditorPropsProvider, ModeProvider);
+const Provider = nest(EditorPropsProvider, ModeProvider, ChosenProvider);
 
 const FormEditor: React.FC<FormEditorProps> = React.memo(
   ({ value, onChange }) => {

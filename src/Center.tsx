@@ -1,15 +1,33 @@
 import React, { useMemo, useCallback } from 'react';
-import { useModeContext, useEditorPropsContext } from './FormEditor';
+import { useModeContext, useEditorPropsContext, useChosenContext } from './FormEditor';
 import SchemaForm from './components/SchemaForm';
 import { Card, Tabs } from 'antd';
+import styled, { css } from 'styled-components';
+import OverLay from './components/OverLay';
 
 interface CenterProps {}
+
+const ClickableCard = styled(Card)`
+  margin-bottom: 1rem !important;
+
+  &:hover {
+    border-color: #2d3746;
+  }
+
+  ${(props: { actived: 'actived' | 'none' }) =>
+    props.actived === 'actived'
+      ? css`
+          border: 2.5px solid #2d3746 !important;
+        `
+      : ``}
+`;
 
 const Center: React.FC<CenterProps> = () => {
   const { mode } = useModeContext();
   const {
     formValue: { schema, prefetch },
   } = useEditorPropsContext();
+  const { chosenKey, setChosenKey } = useChosenContext();
   const noop = useCallback(() => <></>, []);
   const list = useMemo(
     () =>
@@ -23,6 +41,13 @@ const Center: React.FC<CenterProps> = () => {
     [schema, prefetch],
   );
 
+  const handleClickCard = useCallback(
+    (key: string) => {
+      setChosenKey(key === chosenKey ? null : key);
+    },
+    [chosenKey],
+  );
+
   return (
     <>
       <Tabs activeKey={mode} renderTabBar={noop}>
@@ -30,9 +55,14 @@ const Center: React.FC<CenterProps> = () => {
           <SchemaForm schema={schema} defaultValues={prefetch}>
             {form =>
               list.map(props => (
-                <Card key={props.name} style={{ marginBottom: '1rem' }}>
+                <ClickableCard
+                  actived={chosenKey === props.name ? 'actived' : 'none'}
+                  onClick={() => handleClickCard(props.name)}
+                  key={props.name}
+                >
                   <SchemaForm.Field form={form} {...props} />
-                </Card>
+                  <OverLay />
+                </ClickableCard>
               ))
             }
           </SchemaForm>
