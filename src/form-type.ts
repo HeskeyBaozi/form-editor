@@ -1,7 +1,7 @@
 export interface FormSchema {
   title: string;
   description: string;
-  type: 'object';
+  type: string;
   properties: {
     [key: string]: SchemaProperty;
   };
@@ -11,22 +11,22 @@ export interface FormSchema {
 }
 
 export type PrefetchType = {
-  [key: string]: string | number | boolean | any[] | object;
+  [key: string]: any;
 };
 
 export interface SchemaProperty {
-  type: 'string' | 'number' | 'boolean' | 'array' | 'object';
+  type: string;
   title: string;
   description: string;
   'x-component': string;
   'x-params': {
-    [param: string]: string | number | boolean | any[];
+    [param: string]: any;
   };
   properties?: {
     [key: string]: SchemaProperty;
   };
   enum?: string[];
-  items?: SchemaProperty[];
+  items?: Pick<SchemaProperty, 'type'>[] | Pick<SchemaProperty, 'type'>;
 }
 
 export interface EditorValue {

@@ -30,7 +30,7 @@ const Center: React.FC<CenterProps> = () => {
           <SchemaForm schema={schema} defaultValues={prefetch}>
             {form =>
               list.map(props => (
-                <Card key={props.name}>
+                <Card key={props.name} style={{ marginBottom: '1rem' }}>
                   <SchemaForm.Field form={form} {...props} />
                 </Card>
               ))
