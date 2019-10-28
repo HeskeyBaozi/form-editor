@@ -43,7 +43,7 @@ const xImageGroup: React.FC<xImageGroup> = React.forwardRef(
           </DetailImageWrapper>
         ),
         onOk() {},
-        width: '95vw',
+        width: '75vw',
         maskClosable: true,
       });
     }, []);

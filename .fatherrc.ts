@@ -10,7 +10,7 @@ const options: IBundleOptions = {
       {
         libraryName: 'antd',
         libraryDirectory: 'es',
-        style: 'css',
+        style: true,
       },
     ],
     ['babel-plugin-styled-components'],
