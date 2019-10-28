@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback } from 'react';
 import { Form, Button } from 'antd';
 import Field from './Field';
 import { FormSchema, PrefetchType } from '../form-type';
@@ -16,7 +16,6 @@ const SchemaForm: React.FC<SchemaFormProps> & { Field: typeof Field } = ({
   form,
   children,
   onSubmit,
-  defaultValues,
 }) => {
   if (typeof children === 'function') {
     const handleClickSubmit = useCallback(() => onSubmit && onSubmit(form), [form, onSubmit]);

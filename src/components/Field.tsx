@@ -5,7 +5,7 @@ import './register';
 import { registerComponent, componentDict, enhancerDict } from './register/dict';
 import { GetFieldDecoratorOptions, FormProps } from 'antd/es/form/Form';
 
-interface FieldProps extends SchemaProperty, Pick<FormProps, 'form'> {
+export interface FieldProps extends SchemaProperty, Pick<FormProps, 'form'> {
   name: string;
   required: boolean;
   ignored: boolean;
