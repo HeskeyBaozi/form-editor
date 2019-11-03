@@ -30,6 +30,7 @@
   "license": "MIT",
   "dependencies": {
     "constate": "^1.3.2",
+    "immer": "^5.0.0",
     "react-markdown": "^4.2.2"
   }
 }

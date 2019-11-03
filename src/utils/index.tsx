@@ -8,3 +8,5 @@ export const nest = (...components: React.ComponentType<any>[]) =>
     );
     return Result;
   }) as React.FC<any>;
+
+export const jsonSchemaTypes = ['string', 'number', 'boolean', 'object', 'array'];
