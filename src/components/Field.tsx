@@ -7,20 +7,22 @@ import { GetFieldDecoratorOptions, FormProps } from 'antd/es/form/Form';
 
 export interface FieldProps extends SchemaProperty, Pick<FormProps, 'form'> {
   name: string;
-  required: boolean;
-  ignored: boolean;
+  requiredIndex: number;
+  ignoredIndex: number;
+  displayIndex: number;
   defaultValue?: any;
 }
 
 export interface TargetComponentProps {
-  fieldMeta: Omit<FieldProps, 'title' | 'name' | 'x-component' | 'x-params'>;
+  fieldMeta: Omit<FieldProps, 'title' | 'key' | 'x-component' | 'x-params'>;
 }
 
 const Field: React.FC<FieldProps> & { registerComponent: typeof registerComponent } = ({
   title,
   name,
-  ignored,
-  required,
+  requiredIndex,
+  ignoredIndex,
+  displayIndex,
   'x-component': xComponent,
   'x-params': xParams = {},
   form,
@@ -28,6 +30,8 @@ const Field: React.FC<FieldProps> & { registerComponent: typeof registerComponen
   ...rest
 }) => {
   const TargetComponent = componentDict.get(xComponent);
+  const required = useMemo(() => requiredIndex >= 0, [requiredIndex]);
+  const ignored = useMemo(() => ignoredIndex >= 0, [ignoredIndex]);
   if (!TargetComponent) {
     console.error(`[Target:${xComponent}, xParams] =`, TargetComponent, xParams);
     return <Form.Item label={title} required={required} />;
@@ -48,20 +52,19 @@ const Field: React.FC<FieldProps> & { registerComponent: typeof registerComponen
 
   const TargetEnhancer = enhancerDict.get(xComponent);
 
-  const decorator = useMemo(() => {
-    const options: GetFieldDecoratorOptions = { rules: [], initialValue: defaultValue };
-    if (required) {
-      options.rules!.push({
-        required: true,
-        message: '不能为空',
-      });
-    }
-    return form.getFieldDecorator(name, TargetEnhancer ? TargetEnhancer(options) : options);
-  }, [name, required, form, TargetEnhancer, defaultValue]);
+  const options: GetFieldDecoratorOptions = { rules: [], initialValue: defaultValue };
+  if (required && Array.isArray(options.rules)) {
+    options.rules.push({
+      required: true,
+      message: '不能为空',
+    });
+  }
 
   return (
     <Form.Item label={title}>
-      {decorator(<TargetComponent {...xParams} fieldMeta={rest} />)}
+      {form.getFieldDecorator(name, TargetEnhancer ? TargetEnhancer(options) : options)(
+        <TargetComponent {...xParams} fieldMeta={rest} />,
+      )}
     </Form.Item>
   );
 };

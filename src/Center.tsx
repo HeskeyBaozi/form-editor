@@ -4,6 +4,9 @@ import SchemaForm from './components/SchemaForm';
 import { Card, Tabs } from 'antd';
 import styled, { css } from 'styled-components';
 import OverLay from './components/OverLay';
+import prettier from 'prettier/standalone';
+import parserPlugin from 'prettier/parser-babylon';
+import produce from 'immer';
 
 interface CenterProps {}
 
@@ -24,21 +27,21 @@ const ClickableCard = styled(Card)`
 
 const Center: React.FC<CenterProps> = () => {
   const { mode } = useModeContext();
-  const {
-    formValue: { schema, prefetch },
-  } = useEditorPropsContext();
+  const { formValue, onFormValueChange } = useEditorPropsContext();
+  const { schema, prefetch } = formValue;
   const { chosenKey, setChosenKey } = useChosenContext();
   const noop = useCallback(() => <></>, []);
   const list = useMemo(
     () =>
       schema['x-display'].map(property => ({
         name: property,
-        required: schema.required.findIndex(eleKey => eleKey === property) >= 0,
-        ignored: schema['x-ignore'].findIndex(eleKey => eleKey === property) >= 0,
+        requiredIndex: schema.required.findIndex(eleKey => eleKey === property),
+        ignoredIndex: schema['x-ignore'].findIndex(eleKey => eleKey === property),
         ...schema.properties[property],
         defaultValue: prefetch[property] || undefined,
+        displayIndex: schema['x-display'].findIndex(eleKey => eleKey === property),
       })),
-    [schema, prefetch],
+    [formValue],
   );
 
   const handleClickCard = useCallback(
@@ -46,6 +49,62 @@ const Center: React.FC<CenterProps> = () => {
       setChosenKey(key === chosenKey ? null : key);
     },
     [chosenKey],
+  );
+
+  const jsonString = useMemo(
+    () =>
+      prettier.format(JSON.stringify(formValue), {
+        parser: 'json5',
+        plugins: [parserPlugin],
+      }),
+    [formValue],
+  );
+
+  const onDeleteOne = useCallback(
+    async (
+      deleteKey: string,
+      { requiredIndex, ignoredIndex, displayIndex }: { [index: string]: number },
+    ) => {
+      await onFormValueChange(
+        produce(formValue, draftFormValue => {
+          if (draftFormValue.prefetch[deleteKey]) {
+            delete draftFormValue.prefetch[deleteKey];
+          }
+          if (draftFormValue.schema.properties[deleteKey]) {
+            delete draftFormValue.schema.properties[deleteKey];
+          }
+
+          if (requiredIndex >= 0) {
+            draftFormValue.schema.required.splice(requiredIndex, 1);
+          }
+
+          if (ignoredIndex >= 0) {
+            draftFormValue.schema['x-ignore'].splice(ignoredIndex, 1);
+          }
+
+          if (displayIndex >= 0) {
+            draftFormValue.schema['x-display'].splice(displayIndex, 1);
+          }
+        }),
+      );
+    },
+    [formValue],
+  );
+
+  const onChangeOrder = useCallback(
+    async (displayIndex: number, nextIndex: number) => {
+      await onFormValueChange(
+        produce(formValue, draftFormValue => {
+          const current = draftFormValue.schema['x-display'][displayIndex];
+          const next = draftFormValue.schema['x-display'][nextIndex];
+          if (current !== next && typeof current === 'string' && typeof next === 'string') {
+            draftFormValue.schema['x-display'][nextIndex] = current;
+            draftFormValue.schema['x-display'][displayIndex] = next;
+          }
+        }),
+      );
+    },
+    [formValue],
   );
 
   return (
@@ -61,7 +120,23 @@ const Center: React.FC<CenterProps> = () => {
                   key={props.name}
                 >
                   <SchemaForm.Field form={form} {...props} />
-                  <OverLay />
+                  <OverLay
+                    displayIndex={props.displayIndex}
+                    isLast={props.displayIndex === list.length - 1}
+                    onDelete={() =>
+                      onDeleteOne(props.name, {
+                        requiredIndex: props.requiredIndex,
+                        ignoredIndex: props.ignoredIndex,
+                        displayIndex: props.displayIndex,
+                      })
+                    }
+                    onUp={() => {
+                      onChangeOrder(props.displayIndex, props.displayIndex - 1);
+                    }}
+                    onDown={() => {
+                      onChangeOrder(props.displayIndex, props.displayIndex + 1);
+                    }}
+                  />
                 </ClickableCard>
               ))
             }
@@ -87,7 +162,9 @@ const Center: React.FC<CenterProps> = () => {
           </SchemaForm>
         </Tabs.TabPane>
         <Tabs.TabPane tab="Tab 3" key="json">
-          Content of Tab Pane 3
+          <pre>
+            <code>{jsonString}</code>
+          </pre>
         </Tabs.TabPane>
       </Tabs>
     </>

@@ -85,7 +85,15 @@ const baseValue = {
 
 const DemoEditor: React.FC = () => {
   const [value, setValue] = useState<EditorValue>(baseValue);
-  return <FormEditor value={value} onChange={val => setValue(val)} />;
+  return (
+    <FormEditor
+      value={value}
+      onChange={val => {
+        console.log('new', val);
+        setValue(val);
+      }}
+    />
+  );
 };
 
 export default DemoEditor;

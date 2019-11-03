@@ -1,5 +1,5 @@
 import React, { useMemo, useCallback } from 'react';
-import { Input, Form, Button, Typography, Select } from 'antd';
+import { Input, Form, Button, Typography, Select, Switch } from 'antd';
 import { useChosenContext, useEditorPropsContext } from './FormEditor';
 import { FormProps, WrappedFormUtils } from 'antd/es/form/Form';
 import styled from 'styled-components';
@@ -13,10 +13,13 @@ interface RightProps extends FormProps {
 }
 
 interface EditorFormData {
-  key: string;
+  name: string;
   type: string;
   title: string;
   description: string;
+  required: number;
+  ignored: number;
+  defaultValue: any;
 }
 
 const SubmitGroup = styled.div`
@@ -37,17 +40,21 @@ const Right: React.FC<RightProps> = ({ form }) => {
   }
   const { chosenKey, setChosenKey } = useChosenContext();
   const { formValue, onFormValueChange } = useEditorPropsContext();
+  const { schema, prefetch } = formValue;
 
-  const chosenOne = useMemo(
-    () =>
-      (chosenKey &&
-        formValue &&
-        formValue.schema &&
-        formValue.schema.properties &&
-        formValue.schema.properties[chosenKey]) ||
-      null,
-    [chosenKey, formValue],
-  );
+  const chosenOne = useMemo(() => {
+    if (chosenKey && schema && schema.properties && schema.properties[chosenKey]) {
+      const one = schema.properties[chosenKey];
+      return {
+        ...one,
+        requiredIndex: schema.required.findIndex(eleKey => eleKey === chosenKey),
+        ignoredIndex: schema['x-ignore'].findIndex(eleKey => eleKey === chosenKey),
+        displayIndex: schema['x-display'].findIndex(eleKey => eleKey === chosenKey),
+        defaultValue: prefetch[chosenKey] || undefined,
+      };
+    }
+    return null;
+  }, [chosenKey, schema, prefetch]);
 
   const handleReset = useCallback(() => {
     form.resetFields();
@@ -56,22 +63,52 @@ const Right: React.FC<RightProps> = ({ form }) => {
     if (!chosenOne || !chosenKey) {
       return;
     }
-    form.validateFields(async (err, values) => {
-      if (!err) {
-        await onFormValueChange(
-          produce(formValue, draftFormValue => {
-            const afterProperty = produce(chosenOne, draftProperty => {
-              const { key, ...rest } = values;
-              Object.assign(draftProperty, rest);
-            });
-            delete draftFormValue.schema.properties[chosenKey];
-            draftFormValue.schema.properties[values.key] = afterProperty;
-          }),
-        );
+    form.validateFields(
+      async (err, { name: newName, required, ignored, defaultValue, ...rest }) => {
+        if (!err) {
+          const { requiredIndex, ignoredIndex, displayIndex } = chosenOne;
+          await onFormValueChange(
+            produce(formValue, draftFormValue => {
+              const afterProperty = produce(
+                draftFormValue.schema.properties[chosenKey],
+                draftProperty => {
+                  Object.assign(draftProperty, rest);
+                },
+              );
+              delete draftFormValue.schema.properties[chosenKey];
+              draftFormValue.schema.properties[newName] = afterProperty;
 
-        handleReset();
-      }
-    });
+              // required
+              if (required && requiredIndex < 0) {
+                draftFormValue.schema.required.push(newName);
+              }
+
+              if (!required && requiredIndex >= 0) {
+                draftFormValue.schema.required.splice(requiredIndex, 1);
+              }
+
+              // ignored
+              if (ignored && ignoredIndex < 0) {
+                draftFormValue.schema['x-ignore'].push(newName);
+              }
+
+              if (!ignored && ignoredIndex >= 0) {
+                draftFormValue.schema['x-ignore'].splice(ignoredIndex, 1);
+              }
+
+              // draftFormValue.schema['x-ignore'].splice(
+              //   ignoredIndex,
+              //   1,
+              //   ignored ? newKey : (undefined as any),
+              // );
+              // draftFormValue.schema['x-display'].splice(displayIndex, 1, newKey);
+            }),
+          );
+
+          handleReset();
+        }
+      },
+    );
   }, [form, chosenOne, chosenKey]);
 
   const isTouched = useMemo(() => form.isFieldsTouched(), [form]);
@@ -89,7 +126,7 @@ const Right: React.FC<RightProps> = ({ form }) => {
       <Title level={3}>元信息编辑</Title>
       <Form layout="vertical">
         <Form.Item label="字段键名">
-          {form.getFieldDecorator('key', {
+          {form.getFieldDecorator('name', {
             initialValue: chosenKey,
             rules: [{ required: true, message: '不能为空' }],
           })(<Input />)}
@@ -106,10 +143,24 @@ const Right: React.FC<RightProps> = ({ form }) => {
             rules: [{ required: true, message: '不能为空' }],
           })(<Input />)}
         </Form.Item>
+        <Form.Item label="是否必填">
+          {form.getFieldDecorator('required', {
+            initialValue: chosenOne.requiredIndex >= 0,
+            valuePropName: 'checked',
+            rules: [{ required: true, message: '不能为空' }],
+          })(<Switch />)}
+        </Form.Item>
+        <Form.Item label="是否为展示组件且表单中忽略提交">
+          {form.getFieldDecorator('ignored', {
+            initialValue: chosenOne.ignoredIndex >= 0,
+            valuePropName: 'checked',
+            rules: [{ required: true, message: '不能为空' }],
+          })(<Switch />)}
+        </Form.Item>
         <Form.Item label="属性开发者描述">
           {form.getFieldDecorator('description', {
-            initialValue: chosenOne.description,
-            rules: [{ required: true, message: '不能为空' }],
+            initialValue: chosenOne.description || '',
+            rules: [],
           })(<Input />)}
         </Form.Item>
         <Form.Item label="UI组件">

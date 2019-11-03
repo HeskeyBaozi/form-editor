@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import styled from 'styled-components';
 import { Icon, Button } from 'antd';
 
@@ -65,9 +65,30 @@ const CardOverlay = styled.div`
   }
 `;
 
-interface OverLayProps {}
+interface OverLayProps {
+  onUp: () => any;
+  onDown: () => any;
+  onDelete: () => any;
+  displayIndex: number;
+  isLast: boolean;
+}
 
-const OverLay: React.SFC<OverLayProps> = () => {
+const OverLay: React.SFC<OverLayProps> = ({ onUp, onDelete, onDown, displayIndex, isLast }) => {
+  const handleClickUp: React.MouseEventHandler<HTMLElement> = useCallback(e => {
+    e.stopPropagation();
+    onUp();
+  }, []);
+
+  const handleClickDown: React.MouseEventHandler<HTMLElement> = useCallback(e => {
+    e.stopPropagation();
+    onDown();
+  }, []);
+
+  const handleClickDelete: React.MouseEventHandler<HTMLElement> = useCallback(e => {
+    e.stopPropagation();
+    onDelete();
+  }, []);
+
   return (
     <CardOverlay>
       <DragHints>
@@ -75,13 +96,17 @@ const OverLay: React.SFC<OverLayProps> = () => {
         <span>点击下侧按钮可更换位置</span>
       </DragHints>
       <FunctionWrapper>
-        <Button type="primary" size="small">
-          <Icon type="up" />
-        </Button>
-        <Button type="primary" size="small">
-          <Icon type="down" />
-        </Button>
-        <Button type="primary" size="small">
+        {displayIndex === 0 ? null : (
+          <Button onClick={handleClickUp} type="primary" size="small">
+            <Icon type="up" />
+          </Button>
+        )}
+        {isLast ? null : (
+          <Button onClick={handleClickDown} type="primary" size="small">
+            <Icon type="down" />
+          </Button>
+        )}
+        <Button onClick={handleClickDelete} type="primary" size="small">
           <Icon type="delete" />
         </Button>
       </FunctionWrapper>
